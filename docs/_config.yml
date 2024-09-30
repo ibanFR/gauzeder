@@ -5,7 +5,7 @@ theme: just-the-docs
 url: https://ibanfr.github.io/gauzeder
 
 aux_links:
-  Github: https://github.com/ibanfr/gauzeder
+  Gauzeder on Github: https://github.com/ibanfr/gauzeder
 
 # Makes Aux links open in a new tab. Default is false
-aux_links_new_tab: false
+aux_links_new_tab: true
