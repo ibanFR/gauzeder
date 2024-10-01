@@ -23,5 +23,4 @@ Information about the project's license.
 
 ## TODO
 List of tasks to be done:
-- [ ] Include a LICENSE file to specify the licensing terms for your project
-- [ ] Select a Jekyll theme for your project site
+- [] Include a LICENSE file to specify the licensing terms for your project
