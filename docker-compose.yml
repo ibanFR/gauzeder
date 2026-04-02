@@ -1,0 +1,59 @@
+services:
+
+  # ──────────────────────────────────────────────────────
+  # PostgreSQL 16
+  # ──────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    container_name: gauzeder-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gauzeder
+      POSTGRES_USER: gauzeder
+      POSTGRES_PASSWORD: gauzeder
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gauzeder -d gauzeder"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ──────────────────────────────────────────────────────
+  # WildFly 33 (Jakarta EE 10)
+  # Build the WAR first: cd backend && mvn clean package -DskipTests
+  # ──────────────────────────────────────────────────────
+  wildfly:
+    image: quay.io/wildfly/wildfly:33.0.0.Final-jdk17
+    container_name: gauzeder-wildfly
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: gauzeder
+      POSTGRES_USER: gauzeder
+      POSTGRES_PASSWORD: gauzeder
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    volumes:
+      # Mount the built WAR into WildFly's standalone deployments directory
+      - ./backend/infrastructure/target/gauzeder.war:/opt/jboss/wildfly/standalone/deployments/gauzeder.war:ro
+      # Mount the CLI datasource configuration script
+      - ./backend/wildfly-config:/opt/jboss/wildfly/wildfly-config:ro
+    command: >
+      /bin/bash -c "
+        /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0 -bmanagement 0.0.0.0 &
+        until /opt/jboss/wildfly/bin/jboss-cli.sh --connect --command='ls'; do
+          echo 'Waiting for WildFly to start...'; sleep 3;
+        done &&
+        /opt/jboss/wildfly/bin/jboss-cli.sh --connect --file=/opt/jboss/wildfly/wildfly-config/configure-datasource.cli || true &&
+        wait
+      "
+
+volumes:
+  postgres_data:

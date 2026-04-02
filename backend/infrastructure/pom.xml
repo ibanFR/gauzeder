@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ibanfr.gauzeder</groupId>
+        <artifactId>gauzeder-backend</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>gauzeder-infrastructure</artifactId>
+    <packaging>war</packaging>
+    <name>Gauzeder Infrastructure (JPA, JAX-RS, WildFly WAR)</name>
+
+    <dependencies>
+        <!-- Application module -->
+        <dependency>
+            <groupId>com.ibanfr.gauzeder</groupId>
+            <artifactId>gauzeder-application</artifactId>
+        </dependency>
+
+        <!-- Jakarta EE 10 full profile (provided by WildFly) -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>10.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>gauzeder</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

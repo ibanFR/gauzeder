@@ -1,0 +1,38 @@
+# WildFly CLI script to register the PostgreSQL datasource.
+#
+# Usage:
+#   $JBOSS_HOME/bin/jboss-cli.sh --connect --file=wildfly-config/configure-datasource.cli
+#
+# Or run before starting WildFly (embed-server mode):
+#   $JBOSS_HOME/bin/jboss-cli.sh --file=wildfly-config/configure-datasource.cli
+#
+# The PostgreSQL JDBC driver JAR must be deployed first (or added as a module).
+# Download from: https://jdbc.postgresql.org/download/
+
+# --- Embed server for offline configuration ---
+embed-server --std-out=echo
+
+# Add the PostgreSQL JDBC driver (assumes the JAR has been deployed as an artifact)
+/subsystem=datasources/jdbc-driver=postgresql:add(\
+    driver-name=postgresql,\
+    driver-module-name=org.postgresql,\
+    driver-class-name=org.postgresql.Driver,\
+    driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource\
+)
+
+# Register the datasource used by persistence.xml (java:/PostgresDS)
+data-source add \
+    --name=PostgresDS \
+    --jndi-name=java:/PostgresDS \
+    --driver-name=postgresql \
+    --connection-url=jdbc:postgresql://${env.POSTGRES_HOST:localhost}:5432/${env.POSTGRES_DB:gauzeder} \
+    --user-name=${env.POSTGRES_USER:gauzeder} \
+    --password=${env.POSTGRES_PASSWORD:gauzeder} \
+    --min-pool-size=2 \
+    --max-pool-size=10 \
+    --pool-prefill=true \
+    --validate-on-match=true \
+    --valid-connection-checker-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker \
+    --exception-sorter-class-name=org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter
+
+stop-embedded-server
