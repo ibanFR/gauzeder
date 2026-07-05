@@ -9,6 +9,7 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>gauzeder-webapp</module>
+        <module>backend</module>
     </modules>
 
     <properties>
@@ -16,10 +17,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-
-    </dependencies>
 
     <dependencyManagement>
         <dependencies>
